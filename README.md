@@ -4,12 +4,12 @@
 
 ```swift
 #if DEBUG
-	Prontalize.instance.debugModus = true
+  Prontalize.instance.debugModus = true
 #endif
 
 Prontalize.instance.setup(
-	apiToken: "api-token",
-	projectID: "projectID"
+  apiToken: "api-token",
+  projectID: "projectID"
 )
 ```
 
@@ -44,11 +44,11 @@ This text will not update live or on refresh. Only when the view is completely (
 
 ```swift
 struct ContentView: View {
-	var body: some View {
-		VStack {
-			Text("welcome", bundle: .prontalize)
-		}
-	}
+  var body: some View {
+    VStack {
+      Text("welcome", bundle: .prontalize)
+    }
+  }
 }
 ```
 
@@ -66,7 +66,7 @@ Using `ProntalizeText` will automatically refresh the text value upon refresh
 typealias PText = ProntalizeText
 
 VStack {
-	PText("welcome")
+  PText("welcome")
 }
 ```
 
@@ -76,37 +76,37 @@ Using Radon and automatically refreshing the text values.
 
 ```swift
 struct ProntalizeString: CustomDebugStringConvertible {
-	let key: String
-	
-	init(_ key: String) {
-		self.key = key
-	}
-	
-	var debugDescription: String {
-		return key
-	}
+  let key: String
+  
+  init(_ key: String) {
+    self.key = key
+  }
+  
+  var debugDescription: String {
+    return key
+  }
 }
 
 extension Text {
-	init(_ prontalizeString: ProntalizeString) {
-		ProntalizeText(prontalizeString.key)
-	}
+  init(_ prontalizeString: ProntalizeString) {
+    ProntalizeText(prontalizeString.key)
+  }
 }
 
 extension Radon {
-	public enum strings {
-		public static var `welcome`: ProntalizeString { ProntalizeString("welcome") }
-	}
+  public enum strings {
+    public static var `welcome`: ProntalizeString { ProntalizeString("welcome") }
+  }
 }
 
 typealias RS = Radon.strings
 
 struct SomeView: View {
-	var body: some View {
-		VStack {
-			Text(RS.welcome)
-		}
-	}
+  var body: some View {
+    VStack {
+      Text(RS.welcome)
+    }
+  }
 }
 
 ```
