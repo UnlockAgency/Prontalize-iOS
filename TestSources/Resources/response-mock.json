@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "id": "123",
+      "project_id": "123",
+      "identifier": "welcome",
+      "platforms": [
+        "android",
+        "ios"
+      ],
+      "key_type": "app",
+      "pluralization_enabled": false,
+      "translations": [
+        {
+          "plural": null,
+          "locale": "nl_NL",
+          "value": "Nogmaals welkom"
+        },
+        {
+          "plural": null,
+          "locale": "en_US",
+          "value": "Welcome again"
+        },
+        {
+          "plural": null,
+          "locale": "fr_FR",
+          "value": "Accueillir à nouveau"
+        }
+      ]
+    },
+    {
+      "id": "456",
+      "project_id": "123",
+      "identifier": "apples",
+      "platforms": [
+        "android",
+        "ios"
+      ],
+      "key_type": "app",
+      "pluralization_enabled": true,
+      "translations": [
+        {
+          "plural": "one",
+          "locale": "nl_NL",
+          "value": "%d appel"
+        },
+        {
+          "plural": "other",
+          "locale": "nl_NL",
+          "value": "%d appels"
+        },
+        {
+          "plural": "one",
+          "locale": "en_US",
+          "value": "%d apple"
+        },
+        {
+          "plural": "other",
+          "locale": "en_US",
+          "value": "%d apples"
+        },
+        {
+          "plural": "one",
+          "locale": "fr_FR",
+          "value": "%d pomme"
+        },
+        {
+          "plural": "other",
+          "locale": "fr_FR",
+          "value": "%d pommes"
+        }
+      ]
+    }
+  ]
+}
