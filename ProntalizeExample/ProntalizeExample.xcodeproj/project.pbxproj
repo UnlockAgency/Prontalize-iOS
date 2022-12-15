@@ -10,9 +10,7 @@
 		C30445CF294A0A690032B366 /* ProntalizeExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30445CE294A0A690032B366 /* ProntalizeExampleApp.swift */; };
 		C30445D1294A0A690032B366 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30445D0294A0A690032B366 /* ContentView.swift */; };
 		C30445D3294A0A6A0032B366 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C30445D2294A0A6A0032B366 /* Assets.xcassets */; };
-		C30445D6294A0A6A0032B366 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C30445D5294A0A6A0032B366 /* Preview Assets.xcassets */; };
 		C30445E0294A0B620032B366 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C30445E2294A0B620032B366 /* Localizable.strings */; };
-		C30445E6294A0B8B0032B366 /* Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30445E5294A0B8B0032B366 /* Localized.swift */; };
 		C30445E9294A0C070032B366 /* Prontalize in Frameworks */ = {isa = PBXBuildFile; productRef = C30445E8294A0C070032B366 /* Prontalize */; };
 		C30445EE294A23B60032B366 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C30445F0294A23B60032B366 /* Localizable.stringsdict */; };
 /* End PBXBuildFile section */
@@ -22,12 +20,10 @@
 		C30445CE294A0A690032B366 /* ProntalizeExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProntalizeExampleApp.swift; sourceTree = "<group>"; };
 		C30445D0294A0A690032B366 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		C30445D2294A0A6A0032B366 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C30445D5294A0A6A0032B366 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C30445DD294A0A7D0032B366 /* Prontalize */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Prontalize; path = ..; sourceTree = "<group>"; };
 		C30445E1294A0B620032B366 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C30445E3294A0B690032B366 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C30445E4294A0B6D0032B366 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		C30445E5294A0B8B0032B366 /* Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localized.swift; sourceTree = "<group>"; };
 		C30445EF294A23B60032B366 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		C30445F1294A23C90032B366 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		C30445F2294A23CA0032B366 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = nl; path = nl.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -66,23 +62,13 @@
 		C30445CD294A0A690032B366 /* ProntalizeExample */ = {
 			isa = PBXGroup;
 			children = (
-				C30445E5294A0B8B0032B366 /* Localized.swift */,
 				C30445CE294A0A690032B366 /* ProntalizeExampleApp.swift */,
 				C30445D0294A0A690032B366 /* ContentView.swift */,
 				C30445D2294A0A6A0032B366 /* Assets.xcassets */,
-				C30445D4294A0A6A0032B366 /* Preview Content */,
 				C30445E2294A0B620032B366 /* Localizable.strings */,
 				C30445F0294A23B60032B366 /* Localizable.stringsdict */,
 			);
 			path = ProntalizeExample;
-			sourceTree = "<group>";
-		};
-		C30445D4294A0A6A0032B366 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				C30445D5294A0A6A0032B366 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		C30445DC294A0A7D0032B366 /* Packages */ = {
@@ -163,7 +149,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C30445D6294A0A6A0032B366 /* Preview Assets.xcassets in Resources */,
 				C30445EE294A23B60032B366 /* Localizable.stringsdict in Resources */,
 				C30445E0294A0B620032B366 /* Localizable.strings in Resources */,
 				C30445D3294A0A6A0032B366 /* Assets.xcassets in Resources */,
@@ -177,7 +162,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C30445E6294A0B8B0032B366 /* Localized.swift in Sources */,
 				C30445D1294A0A690032B366 /* ContentView.swift in Sources */,
 				C30445CF294A0A690032B366 /* ProntalizeExampleApp.swift in Sources */,
 			);
@@ -345,7 +329,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.esites.ProntalizeExample;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.esites.prontalize.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -373,7 +357,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = nl.esites.ProntalizeExample;
+				PRODUCT_BUNDLE_IDENTIFIER = nl.esites.prontalize.example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

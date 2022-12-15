@@ -13,10 +13,11 @@ public class Prontalize: ObservableObject {
     private static let userDefaultUUIDKey = "prontalize-uuid"
     private static let md5CacheKey = "prontalize-cache-md5"
     
+    /// Enabling debugModus will print debug log lines
     public var debugModus: Bool = false
     
-    private var apiToken: String = ""
-    private var projectID: String = ""
+    public private(set) var apiToken: String = ""
+    public private(set) var projectID: String = ""
     
     /// A Published variable to let the system now it's refreshing / loading the new bundle
     @Published private(set) public var isFetching = false
@@ -25,6 +26,7 @@ public class Prontalize: ObservableObject {
     public var isEnabled = true {
         didSet {
             setBundle()
+            objectWillChange.send()
         }
     }
     
@@ -44,7 +46,14 @@ public class Prontalize: ObservableObject {
             .appendingPathComponent("Prontalize_\(uuid).bundle")
     }
     
-    private var fallbackBundle = Bundle.main
+    public var fallbackBundle = Bundle.main {
+        didSet {
+            if fallbackBundle != oldValue, !didSetCustomBundle {
+                bundle = fallbackBundle
+            }
+        }
+    }
+    private var didSetCustomBundle = false
     
     private init() {
         if let storedUUID = UserDefaults.standard.string(forKey: Self.userDefaultUUIDKey) {
@@ -98,7 +107,7 @@ public class Prontalize: ObservableObject {
     
     private func precheck() {
         if apiToken.isEmpty || projectID.isEmpty {
-            fatalError("apiToken and/or projectID is not set. Call `.setup(apiToken:projectID:)` first")
+            fatalError("[Prontalize] apiToken and/or projectID is not set or empty. Call `.setup(apiToken:projectID:)` first")
         }
     }
     
@@ -111,10 +120,12 @@ public class Prontalize: ObservableObject {
            FileManager.default.fileExists(atPath: bundleURL.path, isDirectory: &isDirectory),
            isDirectory.boolValue {
             self.bundle = bundle
+            didSetCustomBundle = true
             log("Changed bundle to: \(bundleURL)")
         } else {
-            log("Warning - Cannot find bundle at url \(bundleURL) or prontalize is disabled, falling back to \(fallbackBundle)")
+            didSetCustomBundle = false
             bundle = fallbackBundle
+            log("Warning - Disabled instance or cannot find bundle at url \(bundleURL), falling back to \(fallbackBundle)")
         }
     }
     
@@ -131,12 +142,12 @@ public class Prontalize: ObservableObject {
             return
         }
         
-        var urlRequest = URLRequest(url: url)
+        var urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
         urlRequest.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         log("Retrieving translations ...")
-        let data = try await URLSession.shared.data(for: urlRequest).0
+        let (data, _) = try await URLSession.shared.data(for: urlRequest)
         log("Success - Succesfully received translations from prontalize")
         try decodeAndWrite(data: data)
     }
@@ -146,7 +157,7 @@ public class Prontalize: ObservableObject {
         /// That hash is used to check if any changes have been made in prontalize
         /// If the hash is the same as the previous one, do nothing. No need to parse the response and create a new bundle
         let responseMD5Hash = data.md5Hash
-        if cachedMD5Hash == responseMD5Hash {
+        if cachedMD5Hash == responseMD5Hash && FileManager.default.fileExists(atPath: bundleURL.path) {
             log("Not creating new bundle, result is unchanged")
             return
         }
@@ -162,22 +173,32 @@ public class Prontalize: ObservableObject {
             .filter { $0.keyType == .app }
             .filter { $0.platforms.contains(.ios) }
         
-        var localizableStrings: [URL: [String]] = [:]
-        //                          [file: [identifier: [(pluralForm, value)]]]
-        var localizableStringsDict: [URL: [String: [(String, String)]]] = [:]
-        var lprojURLs: [URL] = []
+        typealias PluralForm = String
+        typealias TranslationValue = String
+        typealias LocalizableLine = String
+        typealias Identifier = String
+        typealias FilePathURL = URL
+        
+        var localizableStrings: [FilePathURL: [TranslationValue]] = [:]
+        var localizableStringsDict: [FilePathURL: [Identifier: [(PluralForm, TranslationValue)]]] = [:]
+        var lprojURLs: [FilePathURL] = []
         
         // First write everything in a temporary folder
         // After everything is parsed / written, then set the 'new' bundle
         let tempBundleURL = bundleURL.appendingPathExtension("tmp")
         for translationKey in translationKeys {
             for translation in translationKey.translations {
+                // nl_NL -> "nl", en_US -> "en"
                 let langName = translation.locale.components(separatedBy: "_").first ?? translation.locale
                 
-                let lprojURL = tempBundleURL.appendingPathComponent("\(langName).lproj")
+                // Prontalize_<uid>.tmp.bundle/nl.lrpoj
+                let lprojURL = tempBundleURL.appendingPathComponent("\(langName.lowercased()).lproj")
+                // Prontalize_<uid>.tmp.bundle/nl.lrpoj/Localizable.strings
                 let locStringsURL = lprojURL.appendingPathComponent("Localizable.strings")
+                // Prontalize_<uid>.tmp.bundle/nl.lrpoj/Localizable.stringsdict
                 let stringsDictURL = lprojURL.appendingPathComponent("Localizable.stringsdict")
                 
+                // Create the .lrpoj directory and store it into the lprojURLS array, so it will not be created the next iteration
                 if !lprojURLs.contains(lprojURL), !FileManager.default.fileExists(atPath: lprojURL.path) {
                     try FileManager.default.createDirectory(at: lprojURL, withIntermediateDirectories: true)
                     lprojURLs.append(lprojURL)
@@ -239,7 +260,6 @@ public class Prontalize: ObservableObject {
             )
             log("Writing data to \(file)")
             try data.write(to: file)
-            
         }
         
         log("Remove old bundle \(bundleURL)")
@@ -259,5 +279,6 @@ public class Prontalize: ObservableObject {
         log("Clearing cache")
         try? FileManager.default.removeItem(at: bundleURL)
         bundle = fallbackBundle
+        didSetCustomBundle = false
     }
 }

@@ -15,10 +15,16 @@ struct ProntalizeExampleApp: App {
         Prontalize.instance.debugModus = true
 #endif
         
+        guard let apiToken = ProcessInfo.processInfo.environment["PRONTALIZE_API_TOKEN"],
+              let projectID = ProcessInfo.processInfo.environment["PRONTALIZE_PROJECT_ID"] else {
+            print("Warning - missing apiToken and/or projectID")
+            return
+        }
+        
         // Make sure to set the PRONTALIZE_API_TOKEN and PRONTALIZE_PROJECT_ID in your (private) scheme
         Prontalize.instance.setup(
-            apiToken: ProcessInfo.processInfo.environment["PRONTALIZE_API_TOKEN"] ?? "",
-            projectID: ProcessInfo.processInfo.environment["PRONTALIZE_PROJECT_ID"] ?? ""
+            apiToken: apiToken,
+            projectID: projectID
         )
         
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in

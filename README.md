@@ -63,10 +63,32 @@ let string = NSLocalizedString("welcome", bundle: .prontalize, comment: "")
 Using `ProntalizeText` will automatically refresh the text value upon refresh
 
 ```swift
-typealias PText = ProntalizeText
-
 VStack {
-  PText("welcome")
+  ProntalizeText("welcome")
+}
+```
+
+There is also a public defined func for `Text`:
+
+```swift
+public func Text(_ string: String, pluralCount: Int? = nil) -> ProntalizedText
+```
+
+So this will also work:
+
+```swift
+VStack {
+  Text("welcome")
+}
+```
+
+For plurals if you want to use live reloading:
+
+```swift
+VStack {
+  Text("apples", pluralCount: 3)
+  // -- or --
+  PluralText("apples", pluralCount: 3)
 }
 ```
 
@@ -74,39 +96,10 @@ VStack {
 
 Using Radon and automatically refreshing the text values.
 
-```swift
-struct ProntalizeString: CustomDebugStringConvertible {
-  let key: String
-  
-  init(_ key: String) {
-    self.key = key
-  }
-  
-  var debugDescription: String {
-    return key
-  }
-}
+Run this command after you've updated your localization files
 
-extension Text {
-  init(_ prontalizeString: ProntalizeString) {
-    ProntalizeText(prontalizeString.key)
-  }
-}
+```bash
+#!/bin/sh
 
-extension Radon {
-  public enum strings {
-    public static var `welcome`: ProntalizeString { ProntalizeString("welcome") }
-  }
-}
-
-typealias RS = Radon.strings
-
-struct SomeView: View {
-  var body: some View {
-    VStack {
-      Text(RS.welcome)
-    }
-  }
-}
-
+sed -i '' 's/bundle: .module/bundle: .prontalize/g' ./Modules/Common/Sources/Generated/Radon+strings.swift
 ```
