@@ -14,6 +14,9 @@ struct ContentView: View {
                 Image(systemName: "globe")
                     .imageScale(.large)
                     .foregroundColor(.accentColor)
+                
+                Text("welcome", bundle: .prontalize)  // This Text will not update on refresh
+                
                 Text(Localized.get("welcome"))
                     .foregroundColor(.green)
                     .font(.largeTitle)

@@ -20,6 +20,10 @@ struct ProntalizeExampleApp: App {
             apiToken: ProcessInfo.processInfo.environment["PRONTALIZE_API_TOKEN"] ?? "",
             projectID: ProcessInfo.processInfo.environment["PRONTALIZE_PROJECT_ID"] ?? ""
         )
+        
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            Prontalize.instance.refresh()
+        }
     }
     
     var body: some Scene {

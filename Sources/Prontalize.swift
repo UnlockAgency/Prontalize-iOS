@@ -11,30 +11,49 @@ public class Prontalize: ObservableObject {
     public static let instance = Prontalize()
     
     private static let userDefaultUUIDKey = "prontalize-uuid"
+    private static let md5CacheKey = "prontalize-cache-md5"
     
     public var debugModus: Bool = false
     
     private var apiToken: String = ""
     private var projectID: String = ""
+    
+    /// A Published variable to let the system now it's refreshing / loading the new bundle
     @Published private(set) public var isFetching = false
     
-    private(set) var uuid: String = ""
+    /// Enable / disable the prontalize bundle
+    public var isEnabled = true {
+        didSet {
+            setBundle()
+        }
+    }
     
-    var bundleURL: URL {
+    /// The Bundle that points to the Prontalize resources, if no bundle is available. Use `fallbackBundle`
+    private(set) public var bundle: Bundle = Bundle.main
+    
+    private var uuid: String = ""
+    private var cachedMD5Hash: String? {
+        didSet {
+            UserDefaults.standard.set(cachedMD5Hash, forKey: Self.md5CacheKey)
+        }
+    }
+    
+    private var bundleURL: URL {
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
             .first!
             .appendingPathComponent("Prontalize_\(uuid).bundle")
     }
     
-    private(set) public var bundle: Bundle = Bundle.main
     private var fallbackBundle = Bundle.main
     
-    init() {
+    private init() {
         if let storedUUID = UserDefaults.standard.string(forKey: Self.userDefaultUUIDKey) {
             uuid = storedUUID
         } else {
             setNewUUID()
         }
+        
+        cachedMD5Hash = UserDefaults.standard.string(forKey: Self.md5CacheKey)
     }
     
     /// Setup the Prontalize sdk instance
@@ -42,7 +61,7 @@ public class Prontalize: ObservableObject {
     /// - Parameters:
     ///   - apiToken: The API_TOKEN provided from prontalize.nl
     ///   - projectID: The PROJECT_ID provided from prontalize.nl (you can find this in the url of your project)
-    ///   - fallbackBundle: If the prontalize bundle hasn't been loaded yet, fallback to this bundle to obtain resources from there
+    ///   - fallbackBundle: If the prontalize bundle hasn't been loaded yet, fallback to this bundle to obtain resources from there (defaults to .main)
     public func setup(apiToken: String, projectID: String, fallbackBundle: Bundle = Bundle.main) {
         self.bundle = fallbackBundle
         self.fallbackBundle = fallbackBundle
@@ -72,6 +91,7 @@ public class Prontalize: ObservableObject {
     }
     
     private func setNewUUID() {
+        // We use uuid's, so when an updated bundle is downloaded the new loaded bundle can be used and avoid caching
         uuid = UUID().uuidString
         UserDefaults.standard.set(uuid, forKey: Self.userDefaultUUIDKey)
     }
@@ -85,21 +105,22 @@ public class Prontalize: ObservableObject {
     private func setBundle() {
         var isDirectory: ObjCBool = false
         
-        if !uuid.isEmpty,
+        if isEnabled,
+           !uuid.isEmpty,
            let bundle = Bundle(url: bundleURL),
            FileManager.default.fileExists(atPath: bundleURL.path, isDirectory: &isDirectory),
            isDirectory.boolValue {
             self.bundle = bundle
             log("Changed bundle to: \(bundleURL)")
         } else {
-            log("Warning - Cannot find bundle at url \(bundleURL), falling back to \(fallbackBundle)")
+            log("Warning - Cannot find bundle at url \(bundleURL) or prontalize is disabled, falling back to \(fallbackBundle)")
             bundle = fallbackBundle
         }
     }
     
     private func log(_ line: String) {
         if debugModus {
-            print("[Prontalize] \(line)")
+            print("\(Date()) - [Prontalize] \(line)")
         }
     }
     
@@ -121,6 +142,16 @@ public class Prontalize: ObservableObject {
     }
     
     func decodeAndWrite(data: Data) throws {
+        /// Using an md5 hash of the response data
+        /// That hash is used to check if any changes have been made in prontalize
+        /// If the hash is the same as the previous one, do nothing. No need to parse the response and create a new bundle
+        let responseMD5Hash = data.md5Hash
+        if cachedMD5Hash == responseMD5Hash {
+            log("Not creating new bundle, result is unchanged")
+            return
+        }
+        cachedMD5Hash = responseMD5Hash
+        
         log("Decoding response...")
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
@@ -152,13 +183,7 @@ public class Prontalize: ObservableObject {
                     lprojURLs.append(lprojURL)
                 }
                 
-                let value = translation.value
-                    .replacingOccurrences(of: "\\\n", with: "\\n")
-                    .replacingOccurrences(of: "\n", with: "\\n")
-                    .replacingOccurrences(of: "\\\r", with: "")
-                    .replacingOccurrences(of: "\r", with: "")
-                    .replacingOccurrences(of: "%s", with: "%@")
-                    .replacingOccurrences(of: "\"", with: "\\\"")
+                let value = translation.value.escape()
                 
                 if translationKey.isPlural, let pluralRawValue = translation.plural?.rawValue {
                     var dictionary = localizableStringsDict[stringsDictURL] ?? [:]
@@ -175,6 +200,7 @@ public class Prontalize: ObservableObject {
             }
         }
         
+        // Localizable.strings
         for file in localizableStrings.keys {
             if let data = localizableStrings[file]?.joined(separator: "\n").data(using: .utf8) {
                 log("Writing data to \(file)")
@@ -182,6 +208,7 @@ public class Prontalize: ObservableObject {
             }
         }
         
+        // Localizable.stringsdict
         for file in localizableStringsDict.keys {
             guard let dictionary = localizableStringsDict[file] else {
                 continue
@@ -226,8 +253,11 @@ public class Prontalize: ObservableObject {
         }
     }
     
-    func clearCache() {
+    // Removes the Prontalize bundle and would result in falling back to the `fallBackBundle`
+    public func clearCache() {
+        cachedMD5Hash = nil
         log("Clearing cache")
         try? FileManager.default.removeItem(at: bundleURL)
+        bundle = fallbackBundle
     }
 }
