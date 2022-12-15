@@ -277,6 +277,7 @@ public class Prontalize: ObservableObject {
     public func clearCache() {
         cachedMD5Hash = nil
         log("Clearing cache")
+        UserDefaults.standard.removeObject(forKey: Self.userDefaultUUIDKey)
         try? FileManager.default.removeItem(at: bundleURL)
         bundle = fallbackBundle
         didSetCustomBundle = false

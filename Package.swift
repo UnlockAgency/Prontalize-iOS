@@ -11,6 +11,9 @@ let package = Package(
     products: [
         .library(name: "Prontalize", targets: ["Prontalize"])
     ],
+    dependencies: [
+        .package(url: "https://github.com/nalexn/ViewInspector.git", .upToNextMajor(from: "0.9.2"))
+    ],
     targets: [
         .target(
             name: "Prontalize",
@@ -19,7 +22,8 @@ let package = Package(
         .testTarget(
             name: "ProntalizeTests",
             dependencies: [
-                "Prontalize"
+                "Prontalize",
+                "ViewInspector"
             ],
             path: "TestSources",
             resources: [
