@@ -1,5 +1,7 @@
 # Prontalize iOS SDK
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/UnlockAgency/Prontalize-iOS/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/UnlockAgency/Prontalize-iOS/tree/main)
+
 ## Implementation
 
 ```swift
