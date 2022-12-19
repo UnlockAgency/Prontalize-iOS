@@ -20,19 +20,11 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - run: mkdir test_output
-      - run: xcodebuild test -scheme Prontalize -sdk iphonesimulator -destination "OS=16.1,name=iPhone 14 Pro" -enableCodeCoverage YES -resultBundlePath build.xcresult 2>&1 | tee test_output/build.txt
-      - run: xcrun xccov view --report --json build.xcresult > test_output/buildcov.json
-      - codecov/upload: 
-        file: test_output/buildcov.json
-
-      # Collect XML test results data to show in the UI, and save the same XML
-      # files under test-results folder in the Artifacts tab
-      - store_test_results:
-          path: test_output
-      - store_artifacts:
-          path: test_output
-
+      - name: Build and test
+        run: xcodebuild test -scheme Prontalize -sdk iphonesimulator -destination "OS=16.1,name=iPhone 14 Pro" -enableCodeCoverage YES build test
+      - name: Upload coverage to codecov.io
+        uses: codecov/upload
+    
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
