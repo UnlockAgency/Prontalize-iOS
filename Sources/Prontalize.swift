@@ -53,6 +53,7 @@ public class Prontalize: ObservableObject {
             }
         }
     }
+    
     private var didSetCustomBundle = false
     
     private init() {
@@ -191,14 +192,14 @@ public class Prontalize: ObservableObject {
                 // nl_NL -> "nl", en_US -> "en"
                 let langName = translation.locale.components(separatedBy: "_").first ?? translation.locale
                 
-                // Prontalize_<uid>.tmp.bundle/nl.lrpoj
+                // Prontalize_<uid>.tmp.bundle/nl.lproj
                 let lprojURL = tempBundleURL.appendingPathComponent("\(langName.lowercased()).lproj")
-                // Prontalize_<uid>.tmp.bundle/nl.lrpoj/Localizable.strings
+                // Prontalize_<uid>.tmp.bundle/nl.lproj/Localizable.strings
                 let locStringsURL = lprojURL.appendingPathComponent("Localizable.strings")
-                // Prontalize_<uid>.tmp.bundle/nl.lrpoj/Localizable.stringsdict
+                // Prontalize_<uid>.tmp.bundle/nl.lproj/Localizable.stringsdict
                 let stringsDictURL = lprojURL.appendingPathComponent("Localizable.stringsdict")
                 
-                // Create the .lrpoj directory and store it into the lprojURLS array, so it will not be created the next iteration
+                // Create the .lrpoj directory and store it into the lprojURLs array, so it will not be created the next iteration
                 if !lprojURLs.contains(lprojURL), !FileManager.default.fileExists(atPath: lprojURL.path) {
                     try FileManager.default.createDirectory(at: lprojURL, withIntermediateDirectories: true)
                     lprojURLs.append(lprojURL)
@@ -265,6 +266,7 @@ public class Prontalize: ObservableObject {
         log("Remove old bundle \(bundleURL)")
         try? FileManager.default.removeItem(at: bundleURL)
         setNewUUID()
+        log("Copying new bundle \(bundleURL)")
         try FileManager.default.moveItem(at: tempBundleURL, to: bundleURL)
         setBundle()
         
