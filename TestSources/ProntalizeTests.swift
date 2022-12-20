@@ -91,7 +91,7 @@ class ProntalizeTests: XCTestCase {
         let string2 = try sut.text().string()
         XCTAssertEqual(string2, "Welcome again")
 
-        let pluralView = Text("apples", pluralCount: 3)
+        let pluralView = ProntalizedText("apples", pluralCount: 3)
         
         let string3 = try pluralView.inspect().text().string()
         XCTAssertEqual(string3, "3 apples")
