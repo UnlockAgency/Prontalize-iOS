@@ -70,10 +70,12 @@ VStack {
 }
 ```
 
-There is also a public defined func for `Text`:
+If you want to keep using `Text`, then add this function to your codebase:
 
 ```swift
-public func Text(_ string: String, pluralCount: Int? = nil) -> ProntalizedText
+public func Text(_ string: String, pluralCount: Int? = nil) -> ProntalizedText {
+    return ProntalizedText(string, pluralCount: pluralCount)
+}
 ```
 
 So this will also work:

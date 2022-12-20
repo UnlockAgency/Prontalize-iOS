@@ -116,6 +116,10 @@ struct ContentView2: View {
     
 }
 
+public func Text(_ string: String, pluralCount: Int? = nil) -> ProntalizedText {
+    return ProntalizedText(string, pluralCount: pluralCount)
+}
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()

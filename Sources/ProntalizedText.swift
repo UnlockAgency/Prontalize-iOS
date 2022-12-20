@@ -32,7 +32,3 @@ public struct ProntalizedText: View {
         Text("\(string)", bundle: nil)
     }
 }
-
-public func Text(_ string: String, pluralCount: Int? = nil) -> ProntalizedText {
-    return ProntalizedText(string, pluralCount: pluralCount)
-}
