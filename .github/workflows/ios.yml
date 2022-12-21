@@ -18,17 +18,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
-      - name: Install Xcpretty
-        run: gem install xcpretty --no-document --quiet
-        
-      - name: Build
+      - name: Build and test
+        run: xcodebuild -scheme Prontalize -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 13 Pro" -enableCodeCoverage YES -resultBundlePath coverage/result.xcresult build test
+      
+      - name: Convert code coverage
+        run: xcrun xccov view --report --json coverage/result.xcresult > coverage.json
+
+      - name: xccov2lcov
         run: |
-          set -o pipefail
-          xcodebuild -scheme Prontalize -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 13 Pro" -enableCodeCoverage YES build test | xcpretty -c
-          
+          git clone https://github.com/trax-retail/xccov2lcov.git xccov2lcov
+          (cd xccov2lcov; swift run xccov2lcov ../coverage.json > ../lcov.info)
+
       - name: Code Coverage
         run: |
           set -o pipefail
           export PATH="/usr/local/opt/curl/bin:$PATH"
           curl --version
-          bash <(curl -s https://codecov.io/bash) -J '^Prontalize$' -c -X gcov -F ios
+          bash <(curl -s https://codecov.io/bash) -J '^Prontalize$' -F ios
