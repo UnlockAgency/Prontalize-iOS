@@ -7,13 +7,21 @@ on:
     branches: [ "main" ]
 
 jobs:
-  BuildAndTest:
-    name: Build and Test default scheme using any available iPhone simulator
+  build:
+    name: Build, test and send code coverage
     runs-on: macos-latest
 
     steps:
+      - name: Xcode version
+        run: xcodebuild -version
+
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Clear Derived Data
+        run: |
+          rm -rf /Users/runner/Library/Developer/Xcode/DerivedData
+          mkdir DerivedData
         
       - name: Derived Data
         run: mkdir -p DerivedData
