@@ -29,9 +29,11 @@ jobs:
           git clone https://github.com/trax-retail/xccov2lcov.git xccov2lcov
           (cd xccov2lcov; swift run xccov2lcov ../coverage.json > ../lcov.info)
 
-      - name: Code Coverage
+      - name: Upload Code Coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           set -o pipefail
           export PATH="/usr/local/opt/curl/bin:$PATH"
           curl --version
-          bash <(curl -s https://codecov.io/bash) -J '^Prontalize$' -F ios
+          bash <(curl -s https://codecov.io/bash) -J '^Prontalize$' -F ios -T $CODECOV_TOKEN
