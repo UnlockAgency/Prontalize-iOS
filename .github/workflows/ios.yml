@@ -17,14 +17,6 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Clear Derived Data
-        run: |
-          rm -rf /Users/runner/Library/Developer/Xcode/DerivedData
-          mkdir DerivedData
-        
-      - name: Derived Data
-        run: mkdir -p DerivedData
         
       - name: Install Xcpretty
         run: gem install xcpretty --no-document --quiet
@@ -33,11 +25,10 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -scheme Prontalize -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 13 Pro" -enableCodeCoverage YES build test | xcpretty -c
-          cp /Users/runner/Library/Developer/Xcode/DerivedData ./DerivedData/iOS
           
       - name: Code Coverage
         run: |
           set -o pipefail
           export PATH="/usr/local/opt/curl/bin:$PATH"
           curl --version
-          bash <(curl -s https://codecov.io/bash) -D './DerivedData/iOS' -J '^Prontalize$' -c -X gcov -F ios
+          bash <(curl -s https://codecov.io/bash) -J '^Prontalize$' -c -X gcov -F ios
