@@ -32,11 +32,12 @@ jobs:
       - name: Build
         run: |
           set -o pipefail
-          xcodebuild -scheme Prontalize -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 13 Pro" -enableCodeCoverage YES -derivedDataPath ./DerivedData build test | xcpretty -c
+          xcodebuild -scheme Prontalize -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 13 Pro" -enableCodeCoverage YES build test | xcpretty -c
+          cp /Users/runner/Library/Developer/Xcode/DerivedData ./DerivedData/iOS
           
       - name: Code Coverage
         run: |
           set -o pipefail
           export PATH="/usr/local/opt/curl/bin:$PATH"
           curl --version
-          bash <(curl -s https://codecov.io/bash) -D './DerivedData' -J '^Prontalize$' -c -X gcov -F ios
+          bash <(curl -s https://codecov.io/bash) -D './DerivedData/iOS' -J '^Prontalize$' -c -X gcov -F ios
