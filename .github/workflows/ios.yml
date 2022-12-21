@@ -12,6 +12,11 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Clean DerivedData
+        run: |
+          rm -rf ~/Library/Developer/Xcode/DerivedData/
+          mkdir DerivedData
+          
       - name: Checkout
         uses: actions/checkout@v3
         
@@ -19,7 +24,6 @@ jobs:
         run: gem install xcpretty --no-document --quiet
         
       - name: Build
-
         run: |
           set -o pipefail
           xcodebuild -scheme Prontalize -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 13 Pro" -enableCodeCoverage YES build test | xcpretty -c
