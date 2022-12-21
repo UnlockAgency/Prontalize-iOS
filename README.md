@@ -1,6 +1,10 @@
 # Prontalize iOS SDK
 
 ![IOS workflow](https://github.com/unlockagency/prontalize-ios/actions/workflows/ios.yml/badge.svg)
+[![codecov](https://codecov.io/gh/UnlockAgency/Prontalize-iOS/branch/main/graph/badge.svg?token=W969TSUSSK)](https://codecov.io/gh/UnlockAgency/Prontalize-iOS) 
+[![Platforms](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg)](Package.swift)
+[![SwiftPM compatible](https://img.shields.io/badge/platform-ios | macos-lightgray.svg)](https://swift.org/package-manager/)
+[![License](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE)
 
 ## Implementation
 
