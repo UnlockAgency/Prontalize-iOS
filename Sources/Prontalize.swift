@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Prontalize: ObservableObject {
+public class Prontalize: ObservableObject, @unchecked Sendable {
     public static let instance = Prontalize()
     
     private static let userDefaultUUIDKey = "prontalize-uuid"
@@ -29,6 +29,9 @@ public class Prontalize: ObservableObject {
             objectWillChange.send()
         }
     }
+    
+    /// Instead of using the prontalize API, point to the location of the json file
+    public var staticTranslationsFileURL: String?
     
     /// The Bundle that points to the Prontalize resources, if no bundle is available. Use `fallbackBundle`
     private(set) public var bundle: Bundle = Bundle.main
@@ -72,7 +75,7 @@ public class Prontalize: ObservableObject {
     ///   - apiToken: The API_TOKEN provided from prontalize.nl
     ///   - projectID: The PROJECT_ID provided from prontalize.nl (you can find this in the url of your project)
     ///   - fallbackBundle: If the prontalize bundle hasn't been loaded yet, fallback to this bundle to obtain resources from there (defaults to .main)
-    public func setup(apiToken: String, projectID: String, fallbackBundle: Bundle = Bundle.main) {
+    public func setup(apiToken: String = "", projectID: String = "", fallbackBundle: Bundle = Bundle.main) {
         self.bundle = fallbackBundle
         self.fallbackBundle = fallbackBundle
         self.apiToken = apiToken
@@ -137,15 +140,24 @@ public class Prontalize: ObservableObject {
     }
     
     private func fetch() async throws {
-        precheck()
-        let urlString = "https://prontalize.nl/api/projects/\(projectID)/translation_keys"
-        guard let url = URL(string: urlString) else {
-            return
+        var urlRequest: URLRequest
+        if let staticTranslationsFileURL {
+            guard let url = URL(string: staticTranslationsFileURL) else {
+                return
+            }
+            urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+            
+        } else {
+            precheck()
+            let urlString = "https://prontalize.nl/api/projects/\(projectID)/translation_keys"
+            guard let url = URL(string: urlString) else {
+                return
+            }
+            
+            urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+            urlRequest.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
+            urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        
-        var urlRequest = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-        urlRequest.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
-        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         log("Retrieving translations ...")
         let (data, _) = try await URLSession.shared.data(for: urlRequest)

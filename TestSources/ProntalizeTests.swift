@@ -7,6 +7,7 @@
 
 import Foundation
 import XCTest
+import SwiftUI
 import ViewInspector
 @testable import Prontalize
 
@@ -81,21 +82,20 @@ class ProntalizeTests: XCTestCase {
         }
         let view = ProntalizedText("welcome")
         
-        let sut = try view.inspect()
-        let string1 = try sut.text().string()
+        var sut = try view.inspect().find(ViewType.Text.self)
+        let string1 = try sut.string()
         XCTAssertEqual(string1, "Welcome")
         
         let data = try Data(contentsOf: url)
         try Prontalize.instance.decodeAndWrite(data: data)
         
-        let string2 = try sut.text().string()
+        sut = try view.inspect().find(ViewType.Text.self)
+        let string2 = try sut.string()
         XCTAssertEqual(string2, "Welcome again")
 
         let pluralView = ProntalizedText("apples", pluralCount: 3)
         
-        let string3 = try pluralView.inspect().text().string()
+        let string3 = try pluralView.inspect().find(ViewType.Text.self).string()
         XCTAssertEqual(string3, "3 apples")
     }
 }
-
-extension ProntalizedText: Inspectable { }
